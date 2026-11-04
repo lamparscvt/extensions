@@ -1,6 +1,9 @@
 (function () {
     'use strict';
 
+    // Точный резервный путь к вашему файлу на GitHub Pages
+    var DEFAULT_JSON_URL = 'https://github.io';
+
     function init() {
         // 1. Создаем пункт в настройках Lampa
         Lampa.SettingsApi.addComponent({
@@ -9,14 +12,12 @@
             icon: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>'
         });
 
-        // 2. Умное автоопределение пути к JSON, который лежит рядом на GitHub
-        var jsonUrl = 'https://githubusercontent.com'; // Запасной вариант
+        // 2. Исправленное автоопределение пути (ищет новое имя файла)
+        var jsonUrl = DEFAULT_JSON_URL;
         
         try {
-            // Ищем элемент скрипта в DOM, который Lampa добавила при старте
-            var currentScript = document.currentScript || document.querySelector('script[src*="lampa-installer.js"]');
+            var currentScript = document.currentScript || document.querySelector('script[src*="lampa-extensions-installer.js"]');
             if (currentScript && currentScript.src) {
-                // Отрезаем имя файла js и подставляем plugins.json
                 jsonUrl = currentScript.src.substring(0, currentScript.src.lastIndexOf('/')) + '/plugins.json';
             }
         } catch (e) {
@@ -49,7 +50,11 @@
                         description: plugin.description || plugin.url
                     },
                     onChange: function onChange() {
+                        // Используем стандартный плагинный менеджер Lampa для безопасности данных
                         var currentPlugins = Lampa.Storage.get('plugins', '[]');
+                        if (typeof currentPlugins === 'string') {
+                            try { currentPlugins = JSON.parse(currentPlugins); } catch(e) { currentPlugins = []; }
+                        }
                         
                         var exists = currentPlugins.some(function (p) {
                             return p.url === plugin.url;
@@ -70,7 +75,7 @@
                 });
             });
 
-            // Обновляем окно настроек Lampa
+            // Обновляем окно настроек Lampa, если пользователь уже находится в этом меню
             if (Lampa.Settings.main && Lampa.Settings.main().update) {
                 Lampa.Settings.main().update();
             }
@@ -80,7 +85,7 @@
             Lampa.SettingsApi.addParam({
                 component: 'my_extensions_installer',
                 param: { name: 'error_log', type: 'static' },
-                field: { name: 'Ошибка сети', description: 'Не удалось прочесть plugins.json с GitHub' }
+                field: { name: 'Ошибка сети', description: 'Не удалось прочесть plugins.json по адресу: ' + jsonUrl }
             });
         });
     }
