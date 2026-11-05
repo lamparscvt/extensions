@@ -3,5 +3,10 @@
     "name": "Новые Категории (LME)",
     "url": "https://lampame.github.io/main/newcategory.js",
     "description": "Добавляет Мультфильмы, Документалки и Стриминги"
+  },
+    {
+    "name": "Один плагин — 10+ источников на любой вкус. ",
+    "url": "http://showwwy.com/m.js",
+    "description": "Один плагин — 10+ источников на любой вкус. Внутри уже есть Filmix, Rezka и Kodik, а теперь к ним добавились VK Видео, Rutube, Zetflix, ZetflixDB, HDVB, Vibix и CDNVideoHub."
   }
 ]
